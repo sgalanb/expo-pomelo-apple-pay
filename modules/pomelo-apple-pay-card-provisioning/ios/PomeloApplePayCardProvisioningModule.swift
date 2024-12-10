@@ -7,11 +7,17 @@ public class PomeloApplePayCardProvisioningModule: Module {
     public func definition() -> ModuleDefinition {
         Name("PomeloApplePayCardProvisioning")
 
+        // Adds the ability to send a console log message from native to RN
+        Events("consoleLog")
+
         Function("isPassKitAvailable") {
             return PKAddPaymentPassViewController.canAddPaymentPass()
         }
         
         AsyncFunction("startEnrollment") { (cardHolderName: String, cardId: String, cardPanTokenSuffix: String, promise: Promise) in
+            // Example consoleLog
+            self.sendEvent("consoleLog", ["message": "Starting enrollment for card: \(cardId)"])
+            
             guard PKAddPaymentPassViewController.canAddPaymentPass() else {
                 promise.reject("ERROR", "Apple Pay no está disponible para tu dispositivo.")
                 return
@@ -72,7 +78,7 @@ private class CardProvisioningDelegate: NSObject, PKAddPaymentPassViewController
         )
         
         let interactor = GetPassKitDataIssuerHostInteractor()
-        interactor.execute(request: request) { response in
+        interactor.execute(request: request, promise: promise) { response in
             let request = PKAddPaymentPassRequest()
             request.activationData = response.activationData
             request.ephemeralPublicKey = response.ephemeralPublicKey
@@ -118,7 +124,7 @@ private struct IssuerResponse {
 private class GetPassKitDataIssuerHostInteractor {
     private let baseURL = "https://api.pomelo.la" // Replace with actual base URL
     
-    func execute(request: IssuerRequest, onFinish: @escaping (IssuerResponse) -> Void) {
+    func execute(request: IssuerRequest, promise: Promise, onFinish: @escaping (IssuerResponse) -> Void) {
         // Prepare URL
         guard let url = URL(string: "\(baseURL)/token-provisioning/mastercard/apple-pay") else {
             print("Invalid URL")
@@ -146,7 +152,7 @@ private class GetPassKitDataIssuerHostInteractor {
         
         let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
             if let error = error {
-                promise.reject("ERROR", error)
+                promise.reject("ERROR", error.localizedDescription)
                 return
             }
             
@@ -178,7 +184,7 @@ private class GetPassKitDataIssuerHostInteractor {
                     onFinish(response)
                 }
             } catch {
-                promise.reject("ERROR", error)
+                promise.reject("ERROR", error.localizedDescription)
             }
         }
         

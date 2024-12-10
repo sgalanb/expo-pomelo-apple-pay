@@ -2,8 +2,13 @@
 import PomeloApplePayCardProvisioning from "@/modules/pomelo-apple-pay-card-provisioning";
 import { Alert, Pressable, Text, View } from "react-native";
 import { Image } from "expo-image";
+import { ConsoleLogEvent } from "@/modules/pomelo-apple-pay-card-provisioning/src/PomeloApplePayCardProvisioning.types";
 
 export default function Index() {
+
+  PomeloApplePayCardProvisioning.addListener('consoleLog', (event: ConsoleLogEvent) => {
+    console.log(event.message);
+  });
 
   const addToAppleWallet = async () => {
     try {
