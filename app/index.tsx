@@ -1,47 +1,80 @@
 
-import PomeloApplePayCardProvisioning, { OnErrorMessageEventPayload, PomeloApplePayCardProvisioningView } from "@/modules/pomelo-apple-pay-card-provisioning";
-import { requireNativeModule } from "expo";
-import { useState } from "react";
-import { Text, View } from "react-native";
+import PomeloApplePayCardProvisioning from "@/modules/pomelo-apple-pay-card-provisioning";
+import { Alert, Pressable, Text, View } from "react-native";
+import { Image } from "expo-image";
 
 export default function Index() {
 
-  const isPassKitAvailable = PomeloApplePayCardProvisioning.isPassKitAvailable();
-  console.log("isPassKitAvailable", isPassKitAvailable);
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  PomeloApplePayCardProvisioning.addListener('onErrorMessage', (event: OnErrorMessageEventPayload) => {
-    console.log("onErrorMessage", event);
-  });
+  const addToAppleWallet = async () => {
+    try {
+      if (!PomeloApplePayCardProvisioning.isPassKitAvailable()) {
+        Alert.alert('Error', 'Apple Pay is not available on this device');
+        return;
+      }
+  
+      const result = await PomeloApplePayCardProvisioning.startEnrollment(
+        'John Doe',
+        'card-123',
+        '4321'
+      );
+  
+      if (result.success) {
+        console.log('Card added successfully');
+      } else {
+        console.log('Failed to add card');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <View
       style={{
         flex: 1,
+        width: '100%',
         justifyContent: "center",
         alignItems: "center",
+        padding: 20,
       }}
     >
-      <Text>Hello</Text>
       <View style={{
         margin: 20,
+        width: '100%',
         backgroundColor: '#fff',
         borderRadius: 10,
         padding: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
       }}>
       <Text style={{
         fontSize: 20,
         marginBottom: 20,
       }}>Pomelo Apple Pay Card Provisioning</Text>
-      <PomeloApplePayCardProvisioningView
-        cardHolderName="John Doe"
-        cardId="1234567890"
-        cardPanTokenSuffix="1234"
+      <Pressable
+        onPress={addToAppleWallet}
         style={{
-          height: 200,
+          width: '100%',
+          flexDirection: 'row',
+          gap: 8,
+          backgroundColor: '#6d37d5',
+          padding: 4,
+          borderRadius: 8,
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 40,
         }}
-      />
+      >
+        <Image source="https://upload.wikimedia.org/wikipedia/commons/b/b2/Apple_Wallet_Icon.svg" style={{
+          width: 24,
+          aspectRatio: 750 / 563.15
+        }} />
+        <Text style={{
+          color: '#fff',
+          fontSize: 14,
+        fontWeight: 600,
+        }}>Agregar a Apple Wallet</Text>
+      </Pressable>
     </View>
     </View>
   );

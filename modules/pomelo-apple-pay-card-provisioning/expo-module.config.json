@@ -1,17 +1,10 @@
 {
   "platforms": [
-    "apple",
-    "android",
-    "web"
+    "ios"
   ],
-  "apple": {
+  "ios": {
     "modules": [
       "PomeloApplePayCardProvisioningModule"
-    ]
-  },
-  "android": {
-    "modules": [
-      "expo.modules.pomeloapplepaycardprovisioning.PomeloApplePayCardProvisioningModule"
     ]
   }
 }

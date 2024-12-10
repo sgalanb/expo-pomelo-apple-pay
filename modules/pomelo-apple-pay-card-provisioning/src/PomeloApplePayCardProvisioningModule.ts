@@ -1,10 +1,14 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { requireNativeModule } from 'expo-modules-core';
 
-import { PomeloApplePayCardProvisioningModuleEvents } from './PomeloApplePayCardProvisioning.types';
-
-declare class PomeloApplePayCardProvisioningModule extends NativeModule<PomeloApplePayCardProvisioningModuleEvents> {
-    isPassKitAvailable(): boolean;
+interface PomeloApplePayCardProvisioningModule {
+  isPassKitAvailable(): boolean;
+  startEnrollment(
+    cardHolderName: string,
+    cardId: string,
+    cardPanTokenSuffix: string
+  ): Promise<{ success: boolean }>;
 }
 
-// This call loads the native module object from the JSI.
-export default requireNativeModule<PomeloApplePayCardProvisioningModule>('PomeloApplePayCardProvisioning');
+export default requireNativeModule<PomeloApplePayCardProvisioningModule>(
+  'PomeloApplePayCardProvisioning'
+);
