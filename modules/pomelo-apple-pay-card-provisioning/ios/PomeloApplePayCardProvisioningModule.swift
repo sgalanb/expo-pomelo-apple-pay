@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import PassKit
 
 public class PomeloApplePayCardProvisioningModule: Module {
   // Each module class must implement the definition function. The definition consists of components
@@ -11,38 +12,46 @@ public class PomeloApplePayCardProvisioningModule: Module {
     Name("PomeloApplePayCardProvisioning")
 
     // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants([
-      "PI": Double.pi
-    ])
+    // Constants([
+    //   "PI": Double.pi
+    // ])
 
     // Defines event names that the module can send to JavaScript.
-    Events("onChange")
+    // Events("onChange")
 
     // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      return "Hello world! 👋"
+    Function("isPassKitAvailable") {
+      return PKAddPaymentPassViewController.canAddPaymentPass()
     }
 
     // Defines a JavaScript function that always returns a Promise and whose native code
     // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { (value: String) in
-      // Send an event to JavaScript.
-      self.sendEvent("onChange", [
-        "value": value
-      ])
-    }
+    // AsyncFunction("setValueAsync") { (value: String) in
+    //   // Send an event to JavaScript.
+    //   self.sendEvent("onChange", [
+    //     "value": value
+    //   ])
+    // }
 
     // Enables the module to be used as a native view. Definition components that are accepted as part of the
     // view definition: Prop, Events.
     View(PomeloApplePayCardProvisioningView.self) {
-      // Defines a setter for the `url` prop.
-      Prop("url") { (view: PomeloApplePayCardProvisioningView, url: URL) in
-        if view.webView.url != url {
-          view.webView.load(URLRequest(url: url))
-        }
+
+      Prop("cardHolderName") { (view, cardHolderName: String) in
+        view.cardHolderName = cardHolderName
+      }
+
+      Prop("cardId") { (view, cardId: String) in
+        view.cardId = cardId
+      }
+
+      Prop("cardPanTokenSuffix") { (view, cardPanTokenSuffix: String) in
+        view.cardPanTokenSuffix = cardPanTokenSuffix
       }
 
       Events("onLoad")
+      
+      Events("onErrorMessage")
     }
   }
 }
