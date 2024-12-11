@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sgalanb.expo-pomelo-apple-pay"
+      "bundleIdentifier": "com.sgalanb.expo-pomelo-apple-pay",
+      "entitlements": {
+        "com.apple.developer.payment-pass-provisioning": true
+      }
     },
     "android": {
       "adaptiveIcon": {
